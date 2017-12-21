@@ -1,0 +1,101 @@
+@charset "UTF-8";
+
+.room-icons
+{
+	cursor:pointer;
+}
+
+.room-icons span.active
+{
+	background-position: left 0px;
+}
+.romOpt {
+    display: block;
+    float: left;
+    width: 25px;
+    height: 20px;
+}
+
+.bed {
+	background: url(/img/member/roomOpt/bed.jpg) left top no-repeat;
+	background-size: contain;	
+}
+.TV{
+	background:url(/img/member/roomOpt/tv.jpg) left top no-repeat;
+	background-size: contain;
+}
+.ref
+{
+	background:url(/img/member/roomOpt/ice.jpg) left top no-repeat;
+	background-size: contain;
+	
+}
+
+.sofa
+{
+	background:url(/img/member/roomOpt/sofa.jpg) left top no-repeat;
+	background-size: contain;
+	
+}
+.dra
+{
+	background:url(/img/member/roomOpt/dra.jpg) left top no-repeat;
+	background-size: contain;
+}
+.makeup
+{
+	background:url(/img/member/roomOpt/makeup.jpg) left top no-repeat;
+	background-size: contain;
+}
+.rice
+{
+	background:url(/img/member/roomOpt/rice.jpg) left top no-repeat;
+	background-size: contain;
+}
+.micro
+{
+	background:url(/img/member/roomOpt/micro.jpg) left top no-repeat;
+	background-size: contain;
+}
+.induc
+{
+	background:url(/img/member/roomOpt/induc.jpg) left top no-repeat;
+	background-size: contain;
+}
+.gas
+{
+	background:url(/img/member/roomOpt/gas.jpg) left top no-repeat;
+	background-size: contain;
+}
+
+.che
+{
+	background:url(/img/member/roomOpt/che.jpg) left top no-repeat;
+	background-size: contain;
+}
+.coffee
+{
+	background:url(/img/member/roomOpt/coffee.jpg) left top no-repeat;
+	background-size: contain;
+}
+.hair
+{
+	background:url(/img/member/roomOpt/hair.jpg) left top no-repeat;
+	background-size: contain;
+}
+.water
+{
+	background:url(/img/member/roomOpt/water.jpg) left top no-repeat;
+	background-size: contain;
+}
+.shower
+{
+	background:url(/img/member/roomOpt/shower.jpg) left top no-repeat;
+	background-size: contain;
+}
+.spa
+{
+	background:url(/img/member/roomOpt/spa.jpg) left top no-repeat;
+	background-size: contain;
+}
+

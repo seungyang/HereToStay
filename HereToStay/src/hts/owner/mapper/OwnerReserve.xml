@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ownerReserve">
+<!-- 1. 예약리스트 목록 보기  #{penId}-->
+   <select id="resView" resultType="hts.model.vo.owner.Reservation">
+      select res.res_id,rm.rom_name,pen.pen_name,res.res_tot,TO_CHAR(res.res_outdate,'MM') res_outdate
+      from reservation res, room rm, pension pen 
+      where res.rom_id = rm.rom_id and rm.pen_id = pen.pen_id and rm.pen_id='PEN1000020'
+      order by res_outdate
+   </select> 
+   
+   <!-- 2. 전체 이용건수 , 총매출-->   
+   <select id="resCount" resultType="hts.model.vo.owner.Reservation">
+      SELECT count(mem_id) res_number,sum(res_tot) res_tot
+      FROM reservation
+   </select>
+   
+   <!-- 3. 월별 이용률 -->
+   <select id="resRate" resultType="hts.model.vo.owner.Reservation">
+      SELECT TO_CHAR(res_outdate,'MM') res_outdate,ROUND(((count(mem_id)) / (select count(mem_id)from reservation))*100) res_number
+      FROM reservation
+      GROUP BY TO_CHAR(res_outdate,'MM')
+      ORDER BY res_outdate
+   </select>
+   
+   <!-- 4. penId 얻어오기 -->
+   <select id="getPenId" parameterType="String" resultType="String">
+      SELECT pen_id
+      FROM pension
+      WHERE own_id = #{value}
+   </select>
+   
+   <!-- 5. main 예약 리스트 가져오기 -->
+   <select id="getReserve" parameterType="String" resultType="hts.model.vo.owner.Reservation">
+      SELECT res_id, rom_name, mem_name, mem_tel, res_indate, res_outdate
+      FROM ( SELECT res_id, rom_name, mem_name, mem_tel, res_indate, res_outdate, rownum as rnum
+             FROM ( SELECT res.res_id as res_id, rom.rom_name as rom_name, mem.mem_name as mem_name, mem.mem_tel as mem_tel, res.res_indate as res_indate, res.res_outdate as res_outdate
+                    FROM member mem, reservation res, room rom, pension pen
+                    WHERE pen.pen_id = rom.pen_id AND rom.rom_id = res.rom_id AND res.mem_id = mem.mem_id AND pen.pen_id = #{value}
+                    ORDER BY res.res_indate DESC )
+            )
+      WHERE rnum BETWEEN 1 AND 5
+   </select>
+   
+   <!-- 6. 예약 현황 페이지 예약리스트 가져오기 -->
+   <select id="getAllReserve" parameterType="HashMap" resultType="hts.model.vo.owner.Reservation">
+      <![CDATA[
+         SELECT *
+         FROM ( SELECT res_id, rom_name, mem_name, mem_tel, res_indate, res_outdate, rnum
+                FROM ( SELECT res_id, rom_name, mem_name, mem_tel, res_indate, res_outdate, rownum as rnum
+                       FROM ( SELECT res.res_id as res_id, rom.rom_name as rom_name, mem.mem_name as mem_name, mem.mem_tel as mem_tel, res.res_indate as res_indate, res.res_outdate as res_outdate
+                              FROM member mem, reservation res, room rom, pension pen
+                              WHERE pen.pen_id = rom.pen_id AND rom.rom_id = res.rom_id AND res.mem_id = mem.mem_id AND pen.pen_id = #{penId}
+                              ORDER BY res.res_indate DESC )
+                       ))
+         WHERE rnum >= #{first} AND rnum <= #{end}
+         ORDER BY res_indate desc
+      ]]> 
+   </select>
+   
+   <!-- 7. today 예약 개수 얻어오기 -->
+   <select id="getToday" parameterType="String" resultType="int">
+      SELECT count(*)
+      FROM ( SELECT rom_name, res_indate
+             FROM reservation res, room rom, pension pen
+             WHERE pen.pen_id = rom.pen_id AND res.rom_id = rom.rom_id AND pen.pen_id = #{value} AND res_indate = sysdate )
+   </select>
+   
+   <!-- 8. week 예약 개수 얻어오기 -->
+   <select id="getWeek" parameterType="String" resultType="int">
+      SELECT count(*)
+      FROM ( SELECT rom_name, res_indate
+             FROM reservation res, room rom, pension pen
+             WHERE pen.pen_id = rom.pen_id AND res.rom_id = rom.rom_id AND pen.pen_id = #{value}
+                   AND res_indate BETWEEN to_char( sysdate-( (select to_char(sysdate,'D') from dual) -2 )-1, 'yyyy-mm-dd') AND
+                   to_char( sysdate-( (select to_char(sysdate,'D') from dual) -2 )+5, 'yyyy-mm-dd') )
+   </select>
+   
+   <!-- 7. month 예약 개수 얻어오기 -->
+   <select id="getMonth" parameterType="String" resultType="int">
+      SELECT count(*)
+      FROM ( SELECT rom_name, res_indate
+             FROM reservation res, room rom, pension pen
+             WHERE pen.pen_id = rom.pen_id AND res.rom_id = rom.rom_id AND pen.pen_id = #{value}
+                   AND res_indate BETWEEN TRUNC(sysdate,'MM') AND LAST_DAY(sysdate) )
+   </select>
+   
+   <!-- 8. 총 리스트 개수 얻어오기 -->
+   <select id="getListNum" parameterType="String" resultType="int">
+      SELECT count(*)
+      FROM ( SELECT rom_name, res_indate
+             FROM reservation res, room rom, pension pen
+             WHERE pen.pen_id = rom.pen_id AND res.rom_id = rom.rom_id AND pen.pen_id = #{value})
+   </select>
+</mapper>

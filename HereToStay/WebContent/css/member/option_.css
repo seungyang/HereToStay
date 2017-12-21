@@ -1,0 +1,50 @@
+@charset "UTF-8";
+.pen_icons span
+{
+	background-position: left 0px;
+}
+.pen_opt{
+	 display: block;
+    float: left;
+    width: 30px;
+    height: 25px;
+}
+.kitchen { 
+	
+    background: url(/img/pref-07.png) left top no-repeat;
+    background-size:contain;	
+}
+.bar { 
+    background: url(/img/pref-05.png) left top no-repeat;
+    background-size:contain;
+}
+.restourant { 
+    background: url(/img/member/penOpt/ras.jpg) left top no-repeat;
+   background-size:contain;
+}
+.pool { 
+    background: url(/img/pref-12.png) left top no-repeat;
+    background-size:contain;
+}
+.play-place { 
+    background: url(/img/pref-03.png) left top no-repeat;
+    background-size:contain;
+}
+.get { 
+    background: url(/img/member/penOpt/get.jpg) left top no-repeat;
+    background-size:contain;
+}
+.entertaiment { 
+    background: url(/img/member/penOpt/fishing.jpg) left top no-repeat;
+    background-size:contain;	
+}
+.parking { 
+    background: url(/img/pref-13.png) left top no-repeat;
+    background-size:contain;
+}
+.pets { 
+    background: url(/img/pref-16.png) left top no-repeat;
+    background-size:contain;
+}
+
+

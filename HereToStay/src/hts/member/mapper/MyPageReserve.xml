@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MyPageReserve">
+
+<!-- 펜션 별 예약 상세보기 -->
+<select id="getReserve" parameterType="hashMap" resultType="reservationDetail">
+	SELECT pen.pen_name as pen_name, pen.pen_addr2 as pen_addr2, rm.rom_name as rom_name,TO_CHAR(rs.res_indate, 'YYYY-MM-DD') as res_indate,
+		   TO_CHAR(rs.res_outdate, 'YYYY-MM-DD') as res_outdate, TO_CHAR(rs.res_tot, '999,999,999') as res_tot, pen.pen_id as pen_id,
+	       rm.rom_people as rom_people, rs.res_status as res_status, pen.pen_intro as pen_intro, pen.pen_noti as pen_noti, rs.res_id as res_id
+	FROM pension pen, room rm, reservation rs
+	WHERE pen.pen_id = rm.pen_id AND rs.rom_id = rm.rom_id AND rs.mem_id = #{memId} AND rs.res_id = #{resId}
+</select>
+
+<!-- 예약 취소하기-->
+<select id="delReserve" parameterType="String">
+	UPDATE reservation
+	SET res_status = '예약취소'
+	WHERE res_id = #{value}
+</select>
+
+<!-- 마일리지 얻어오기 -->
+<select id="getMig" parameterType="String" resultType="int">
+	SELECT mem_mig
+	FROM member
+	WHERE mem_id = #{value}
+</select>
+
+<!-- 마일리지 회수하기 -->
+<select id="delMig" parameterType="HashMap">
+	UPDATE member
+	SET mem_mig = mem_mig - (SELECT res_tot * 0.01 FROM reservation WHERE res_id = #{resId})
+	WHERE mem_id = #{memId}
+</select>
+
+<!-- revId 얻어오기 -->
+<select id="reviewVal" resultType="String">
+	select seq_rev_id.nextval from dual
+</select>
+
+<!-- 리뷰 입력하기 -->
+<select id="writeReview" parameterType="review">
+	INSERT INTO review
+	VALUES (#{revId}, #{resId}, #{revTitle}, #{revContext}, sysdate, #{revStar}, 'N')
+</select>
+<!-- 총 결제금액 얻어오기 -->
+<select id="getTotMoney" parameterType="String" resultType="int">
+   SELECT res_tot
+   FROM reservation
+   WHERE res_id = #{value}
+</select>
+
+<!-- 마일리지 0으로 업데이트하기 -->
+<select id="setZeroMig" parameterType="String">
+   UPDATE member
+   SET mem_mig = 0
+   WHERE mem_id = #{memId}
+</select>
+
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ownerQnA">
+
+	<!-- 1. 문의사항 저장하기 -->
+	<select id="qnaInsert" parameterType="hts.model.vo.owner.ModelQnA">
+		INSERT INTO qna
+		VALUES (#{qnaId}, #{qnaTitle}, #{qnaType}, #{qnaContext}, 'N', '', SYSDATE, #{mgrId}, #{userId})
+	</select>
+	
+	<!-- 2. 문의사항 자세히 보기 -->
+	<select id="qnaDetail" parameterType="HashMap" resultType="hts.model.vo.owner.ModelQnA">
+		SELECT TO_CHAR(qna.qna_date, 'YYYY-MM-DD') as qna_date, qna.user_id as user_id, qna.qna_title as qna_title, qna.qna_status as qna_status,
+       		   qna.qna_type as qna_type, qna.qna_context as qna_context, mgr.mgr_id as mgr_id, qna.qna_reply as qna_reply, mgr.mgr_name as mgr_name
+		FROM qna, manager mgr
+		WHERE mgr.mgr_id = qna.mgr_id AND qna.user_id = #{ownId} AND qna.qna_id = #{qnaId}
+	</select>
+	
+	<!-- 3. 문의사항 리스트 가져오기 -->
+	<select id="getQnAList" parameterType="String" resultType="hts.model.vo.owner.ModelQnA">
+		SELECT qna_title, qna_context, qna_date, qna_status, qna_id
+		FROM (SELECT qna_title, qna_context, qna_date, qna_status, qna_id, rownum as rnum
+		      FROM (SELECT qna_title, qna_context, TO_CHAR(qna_date, 'YYYY-MM-DD') as qna_date, qna_status, qna_id
+		            FROM qna
+		            WHERE user_id = #{value}
+		            ORDER BY qna_date DESC))
+		WHERE rnum BETWEEN 1 AND 9
+	</select>
+	
+		<!-- qnaId 가져오기 -->
+	<select id="getQnAId" resultType="String">
+		select seq_qna_id.nextval from dual
+	</select>
+	
+</mapper>

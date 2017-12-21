@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ManagerStorage">
+
+
+<!-- START OF 재고리스트 출력  -->
+<select id="storageList" resultType="hts.model.vo.manager.StorageDetail">
+select p.pen_id, p.pen_name, p.pen_addr,p.pen_addr2, s.sto_bath, s.sto_tnc from pension p, storage s where p.pen_id = s.pen_id ORDER BY s.sto_bath + s.sto_tnc 
+</select>
+<!-- END OF 재고리스트 출력  -->
+
+<!-- START OF 재고리스트 전체 출력(페이징처리)  -->
+<select id="stoPaging" resultType="hts.model.vo.manager.StorageDetail">
+
+    SELECT 
+        a.*
+    FROM (
+        SELECT ROWNUM rnum, s.*
+        FROM (
+           select p.pen_id, p.pen_name, p.pen_addr,p.pen_addr2, s.sto_bath, s.sto_tnc from pension p, storage s where p.pen_id = s.pen_id ORDER BY s.sto_bath + s.sto_tnc 
+        )s
+    )a 
+WHERE rnum BETWEEN #{startRowNo} AND #{endRowNo}
+
+</select>
+<!-- END OF 재고리스트 전체 출력(페이징처리)  -->
+
+
+
+<!-- START OF 재고리스트 페이징처리 시에 카운트 불러오기  -->
+<select id="storageTC"  resultType="int">
+SELECT count(*) totalCount from pension p, storage s  where p.pen_id = s.pen_id
+</select>
+<!-- END OF 재고리스트 페이징처리 시에 카운트 불러오기  -->
+
+
+
+<!-- START OF 재고리스트 검색 시에 페이징처리 카운트 불러오기  -->
+<select id="storageSearchTC"  resultType="int">
+select count(*) totalCount from pension p, storage s where p.pen_id = s.pen_id and p.pen_name like '%'||#{penName}||'%'
+</select>
+<!-- END OF 재고리스트 검색 시에 페이징처리 카운트 불러오기  -->
+
+
+
+<!-- START OF 재고리스트에 숯,목욕세트 한번에 업데이트 하기  -->
+<update id="storageUpdate" parameterType="hts.model.vo.manager.Strorage">
+update storage set STO_BATH = STO_BATH+(20-STO_BATH),STO_TNC = STO_TNC+(20-STO_TNC) where pen_id='${penId}'
+</update>
+<!-- END OF 재고리스트에 숯,목욕세트 한번에 업데이트 하기  -->
+
+
+
+<!-- START OF 재고리스트에 목욕세트 업데이트 하기  -->
+<update id="bathUpdate" parameterType="hts.model.vo.manager.Strorage">
+update storage set STO_BATH = (select case when STO_BATH+#{stoBath}>20 then 20 END BATH from storage where pen_id='${penId}') where pen_id='${penId}'
+</update>
+<!-- END OF 재고리스트에 목욕세트 업데이트 하기  -->
+
+
+
+<!-- START OF 재고리스트에 숯 갯수 업데이트 하기  -->
+<update id="tncUpdate" parameterType="hts.model.vo.manager.Strorage">
+<!-- update storage set STO_TNC = (select case when STO_TNC+#{stoTnc}>20 then 20 END TNC from storage where pen_id='${penId}') where pen_id='${penId}' -->
+update storage set STO_TNC = STO_TNC+#{stoTnc} where pen_id='${penId}'
+</update>
+<!-- END OF 재고리스트에 숯 갯수 업데이트 하기  -->
+
+
+<!-- START OF 재고리스트 페이징처리하여 검색하기  -->
+<select id="stoSearch" resultType="hts.model.vo.manager.StorageDetail" >
+    SELECT 
+        a.*
+    FROM (
+        SELECT ROWNUM rnum, s.*
+        FROM (
+           select p.pen_id, p.pen_name, p.pen_addr,p.pen_addr2, s.sto_bath, s.sto_tnc from pension p, storage s where p.pen_id = s.pen_id and p.pen_name like '%'||#{penName}||'%'
+        )s
+    )a 
+WHERE rnum BETWEEN #{startRowNo} AND #{endRowNo}
+</select>
+<!-- END OF 재고리스트 페이징처리하여 검색하기  -->
+
+
+<select id="stoMerge" parameterType="hts.model.vo.manager.Strorage">
+<![CDATA[
+	MERGE INTO STORAGE 
+	USING DUAL  
+	ON (pen_id = #{penId}) 
+	WHEN MATCHED THEN 
+		UPDATE SET sto_bath = #{stoBath}, sto_tnc = #{stoTnc} 
+	WHEN NOT MATCHED THEN 
+		INSERT (STO_ID,PEN_ID,STO_BATH,STO_TNC) values ('STO'||seq_sto_id.nextval,#{penId},#{stoBath},#{stoTnc})]]>
+  </select>
+  
+  
+</mapper>

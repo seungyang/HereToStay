@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reserveResult">
+<insert id="insertRes" parameterType="HashMap">
+INSERT INTO reservation 
+select 'res'||seq_res_id.nextval,#{memId},#{romId},TO_DATE(#{resIndate},'YY/MM/DD'),TO_DATE(#{resOutdate},'YY/MM/DD'),#{resTot},'예약완료' from dual
+<![CDATA[where not exists (select res_id FROM reservation where rom_id=#{romId} and res_status='예약완료' and
+ ((#{resIndate} >=]]> res_indate and #{resIndate} <![CDATA[<]]> res_outdate)
+  or(#{resOutdate} <![CDATA[>]]> res_indate and #{resOutdate} <![CDATA[<=]]>res_outdate) 
+  or (res_indate<![CDATA[>=]]>#{resIndate} and res_indate<![CDATA[<]]>#{resOutdate})or 
+  (res_outdate <![CDATA[>]]>#{resIndate} and res_outdate <![CDATA[<=]]>#{resOutdate})))
+</insert>
+<!-- 예약 시 마일리지 적립하기 -->
+<select id="addMig">
+	UPDATE member
+	SET mem_mig = mem_mig + (#{resTot} * 0.01)
+	WHERE mem_id = #{memId}
+</select>
+<update id="useMig">
+UPDATE member SET mem_mig=mem_mig-#{useMig} where mem_id=#{memId}
+</update>
+</mapper>

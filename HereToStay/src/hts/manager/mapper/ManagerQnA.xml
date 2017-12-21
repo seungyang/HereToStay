@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ManagerQnA">
+
+<select id="qnaList" parameterType="hts.model.vo.manager.QnA" resultType="hts.model.vo.manager.QnA">
+            select * from QNA where mgr_id=#{mgrId} ORDER BY QNA_STATUS 
+</select>
+
+<select id="ownerQnA"  parameterType="hts.model.vo.manager.QnA" resultType="hts.model.vo.manager.QnA">
+
+            select * from QNA where USER_ID IN(select OWN_ID from OWNER) AND mgr_id=#{mgrId} ORDER BY QNA_STATUS 
+ 
+</select>
+
+<select id="memberQnA"  parameterType="hts.model.vo.manager.QnA" resultType="hts.model.vo.manager.QnA">
+
+            select * from QNA where USER_ID IN(select MEM_ID from MEMBER) AND mgr_id=#{mgrId} ORDER BY QNA_STATUS 
+
+
+</select>
+
+
+</mapper>
